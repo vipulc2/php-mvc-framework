@@ -22,8 +22,6 @@ class Router {
             // Getting the variable pattern
            $pattern = $this->getPatternFromRoutePath($route["path"]);
 
-            print_r($pattern);
-
             // Finally using that pattern to match with the path(url)
             if (preg_match($pattern, $path, $matches)) {
                 // Using the matches to trigger the Controller and Action classes by returning this
@@ -47,11 +45,15 @@ class Router {
 
             // This RegEx matches the Router variables that we created not the path(url)
             if (preg_match("#^\{([a-z][a-z0-9]*)\}$#", $segment, $matches)) {
-                //This converts the router variables into RegEx to convert into segments
-                // We added [^/]* so that it can match anything in here except the forward slash so that the segments can remain separate
+                /*
+                This converts the router variables into RegEx to convert into segments
+                We added [^/]* so that it can match anything in here except the forward slash so that the segments can remain separate
+                */
                 return "(?<" . $matches[1] . ">[^/]*)";
             }
-            // This is to check if the router varaible also has a RegEx in it for example the variables {id:\d} Here the \d is for checking the number [0-9] and .+ makes sure that the \d or any other regular expression passes to the pattern and matches so that it can be handled in this if statement
+            /*
+            This is to check if the router varaible also has a RegEx in it for example the variables {id:\d} Here the \d is for checking the number [0-9] and .+ makes sure that the \d or any other regular expression passes to the pattern and matches so that it can be handled in this if statement. same goes for \w
+            */
             if (preg_match("#^\{([a-z][a-z0-9]*):(.+)\}$#", $segment, $matches)) {
 
                 return "(?<" . $matches[1] . ">" . $matches[2] . ")";
@@ -61,8 +63,10 @@ class Router {
 
         }, $segments);
 
-        //These segments are then returned so that it can be mathced with the path(URL) converting the segments into a whole RegEx for pattern matching
-        return "#^" . implode("/", $segments) . "$#";
+        /*
+        These segments are then returned so that it can be mathced with the path(URL) converting the segments into a whole RegEx for pattern matching. The "i" indicates to check for case insenitive pattern. "u" helps to match any unicode character
+        */
+        return "#^" . implode("/", $segments) . "$#iu";
 
     }
 
