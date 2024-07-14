@@ -15,6 +15,8 @@ The Routes check with the path(url) in the order they are added so we add specif
 The route {controller}/{action} is the most basic one thus it should be at the last so that the other routes gets checked.
 */
 
+
+$router->add("/admin/{controller}/{action}", ["namespace" => "Admin"]);
 // For this router we have to take care of the name here like title, id, and page have the same named parameter as the method in Products controller called showPage() action method
 $router->add("/{title}/{id:\d+}/{page:\d+}", ["controller" => "products", "action" => "showPage"]);
 // This is the same way the \w is used to matches all characters including hyphens
