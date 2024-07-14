@@ -36,7 +36,7 @@ class Router {
         return false;
     }
 
-    private function getpatternFromRoutePath(string $route_path): string {
+    private function getPatternFromRoutePath(string $route_path): string {
 
         $route_path = trim($route_path, "/");
         $segments = explode("/", $route_path);
