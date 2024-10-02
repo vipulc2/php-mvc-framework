@@ -1,1 +1,0 @@
-This is products show page
