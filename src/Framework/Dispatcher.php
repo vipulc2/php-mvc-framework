@@ -6,6 +6,7 @@ namespace Framework;
 We are using ReflextionMethod to get the parameter name of the methods in a certain class. Here it is the Products controller class from wherewe can get all the parameter names and then we can use that to get the values from router array and use it when we are called $action in the controller. This way the parameters are used automatically when the $action is called 
 */
 use ReflectionMethod;
+use ReflectionClass;
 
 class Dispatcher {
 
@@ -24,7 +25,7 @@ class Dispatcher {
         $action = $this->getActionName($params);
         $controller = $this->getControllerName($params);
 
-        $controller_object = new $controller;
+        $controller_object = $this->getObject($controller);
 
         //With this function's return value we get the list of parameter names of the action that we need to execute and it also has the values associated with the params from the URL. Then we can also give the values to the action method and handle the method according to the URL
         $args = $this->getActionArguments($controller, $action, $params);
@@ -34,7 +35,7 @@ class Dispatcher {
     }
 
     //Basically we can tell which parameter is being called when a certain action method is supposed to be executed from within a controller
-    private function getActionArguments( string $controller, string $action, array $params): array {
+    private function getActionArguments(string $controller, string $action, array $params): array {
 
         $args = [];
 
@@ -74,5 +75,31 @@ class Dispatcher {
 
         return $action;
 
+    }
+
+    public function getObject(string $class_name): object {
+
+        $reflector = new ReflectionClass($class_name);
+
+        $constructor = $reflector->getConstructor();
+
+        $dependencies = [];
+
+        if ($constructor === null ) {
+
+            return new $class_name;
+
+        }
+
+        foreach ($constructor->getParameters() as $parameter) {
+
+            $type = (string) $parameter->getType();
+
+            $dependencies[]  = $this->getObject($type);
+            
+        }
+        
+
+        return new $class_name(...$dependencies);
     }
 }
