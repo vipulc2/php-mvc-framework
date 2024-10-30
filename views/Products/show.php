@@ -1,5 +1,6 @@
-This is products show page with the ID <?php echo $id; ?> Here
+<h1><?php echo $product["name"]; ?></h1>
 
+<p><?php echo $product["description"]; ?></p>
 
 </body>
 

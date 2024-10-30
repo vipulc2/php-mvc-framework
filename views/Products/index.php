@@ -6,8 +6,11 @@
 
 foreach($products as $product) { ?>
 
-    <h2><?php echo htmlspecialchars($product['name']); ?></h2>
-    <p><?php echo htmlspecialchars($product['description']); ?></p>
+    <h2>
+    <a href="/products/<?= $product["id"] ?>/show">
+        <?= htmlspecialchars($product['name']) ?>
+    </a>
+</h2>
 
 <?php
 
