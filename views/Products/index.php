@@ -1,6 +1,8 @@
-
-
 <h1>Products</h1>
+
+<a href="/products/new">New Product</a>
+
+<p>Total: <?= $total ?></p>
 
 <?php
 
