@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Framework;
 
+use ReflectionMethod;
+use Framework\Exception\PageNotFoundException;
+use UnexpectedValueException;
+
 /*
 We are using ReflextionMethod to get the parameter name of the methods in a certain class. Here it is the Products controller class from wherewe can get all the parameter names and then we can use that to get the values from router array and use it when we are called $action in the controller. This way the parameters are used automatically when the $action is called 
 */
-use ReflectionMethod;
-
-use Framework\Exceptions\PageNotFoundException;
 
 class Dispatcher {
 
@@ -17,18 +18,23 @@ class Dispatcher {
 
     }
 
-    public function handle(string $path) {
+    public function handle(Request $request) {
 
-        $params = $this->router->match($path);
+        $path = $this->getPath($request->uri);
+
+        $params = $this->router->match($path, $request->method);
 
         if ($params === false) {
-            throw new PageNotFoundException("No routes matched for '$path'");
+            throw new PageNotFoundException("No routes matched for '$path' with method '{$request->method}'");
         }
 
         $action = $this->getActionName($params);
         $controller = $this->getControllerName($params);
 
         $controller_object = $this->container->get($controller);
+
+        $controller_object->setRequest($request);
+        $controller_object->setViewer($this->container->get(PHPTemplateViewer::class));
 
         //With this function's return value we get the list of parameter names of the action that we need to execute and it also has the values associated with the params from the URL. Then we can also give the values to the action method and handle the method according to the URL
         $args = $this->getActionArguments($controller, $action, $params);
@@ -78,6 +84,18 @@ class Dispatcher {
 
         return $action;
 
+    }
+
+    private function getPath(string $uri): string {
+
+        $path = parse_url($uri, PHP_URL_PATH);
+
+        if ($path === false) {
+
+            throw new UnexpectedValueException("Malformed URL: '$uri'");
+        }
+
+        return $path;
     }
 
 

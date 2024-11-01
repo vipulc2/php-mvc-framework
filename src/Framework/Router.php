@@ -16,7 +16,7 @@ class Router {
     }
 
     // This function matches the Path(URL) with our defined Routes using the pattern that we created. This pattern is created using the Routing table variables
-    public function match(string $path): array|bool {
+    public function match(string $path, string $method): array|bool {
         // Trims the path(url) so that we don't have to worry about path and route slashes
         $path = trim($path, "/");
 
@@ -30,6 +30,14 @@ class Router {
                 $matches = array_filter($matches, "is_string", ARRAY_FILTER_USE_KEY);
                 // There are some routes that we define with their own params (controller and action) and these are not variables but we are not using those so with this we can use those as well to initiate the Controller and Action classes
                 $params = array_merge($matches, $route["params"]);
+
+                if (array_key_exists("method", $params)) {
+
+                    if (strtolower($method) !== strtolower($params["method"])) {
+
+                        continue;
+                    }
+                }
 
                 return $params;
             }

@@ -14,10 +14,17 @@ $router->add("/{title}/{id:\d+}/{page:\d+}", ["controller" => "products", "actio
 // This is the same way the \w is used to matches all characters including hyphens
 $router->add("/product/{slug:[\w-]+}", ["controller" => "products", "action" => "show"]);
 // This route is added with a custom RegEx the \d+ will be checked in pattern checking class
-$router->add("{controller}/{id:\d+}/{action}");
+// $router->add("{controller}/{id:\d+}/{action}");
 
-$router->add("/products", ["controller" => "products", "action" => "index"]);
+$router->add("/{controller}/{id:\d+}/show", ["action" => "show"]);
+$router->add("/{controller}/{id:\d+}/edit", ["action" => "edit"]);
+$router->add("/{controller}/{id:\d+}/update", ["action" => "update"]);
+$router->add("/{controller}/{id:\d+}/delete", ["action" => "delete"]);
+$router->add("/{controller}/{id:\d+}/destroy", ["action" => "destroy", "method" => "post"]);
+
+
 $router->add("/home/index", ["controller" => "home", "action" => "index"]);
+$router->add("/products", ["controller" => "products", "action" => "index"]);
 $router->add("/", ["controller" => "home", "action" => "index"]);
 $router->add("{controller}/{action}");
 
