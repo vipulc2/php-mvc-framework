@@ -25,4 +25,6 @@ $dispatcher = new Framework\Dispatcher($router, $container);
 
 $request = Framework\Request::createFromGlobals();
 
-$dispatcher->handle($request);
+$response = $dispatcher->handle($request);
+
+$response->send();

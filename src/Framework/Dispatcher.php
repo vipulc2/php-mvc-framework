@@ -18,7 +18,7 @@ class Dispatcher {
 
     }
 
-    public function handle(Request $request) {
+    public function handle(Request $request): Response {
 
         $path = $this->getPath($request->uri);
 
@@ -36,11 +36,13 @@ class Dispatcher {
         $controller_object->setRequest($request);
         $controller_object->setViewer($this->container->get(TemplateViewerInterface::class));
 
+        $controller_object->setResponse($this->container->get(Response::class));
+
         //With this function's return value we get the list of parameter names of the action that we need to execute and it also has the values associated with the params from the URL. Then we can also give the values to the action method and handle the method according to the URL
         $args = $this->getActionArguments($controller, $action, $params);
 
         //Here we are using the ... to unpach the $args array because each action method may or may not be expecting an array and this sends the values inside the array as a list of individual arguments. Like we would usually do with a comma like $a, $b etc. The number of arguments and everything is handled automatically by getActionArguments() method
-        $controller_object->$action(...$args);
+        return $controller_object->$action(...$args);
     }
 
     //Basically we can tell which parameter is being called when a certain action method is supposed to be executed from within a controller
