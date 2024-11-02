@@ -8,4 +8,9 @@ $container->set(App\Database::class, function(){
 
 });
 
+$container->set(Framework\TemplateViewerInterface::class, function() {
+
+    return new Framework\MVCTemplateViewer;
+});
+
 return $container;

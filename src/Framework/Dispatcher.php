@@ -34,7 +34,7 @@ class Dispatcher {
         $controller_object = $this->container->get($controller);
 
         $controller_object->setRequest($request);
-        $controller_object->setViewer($this->container->get(PHPTemplateViewer::class));
+        $controller_object->setViewer($this->container->get(TemplateViewerInterface::class));
 
         //With this function's return value we get the list of parameter names of the action that we need to execute and it also has the values associated with the params from the URL. Then we can also give the values to the action method and handle the method according to the URL
         $args = $this->getActionArguments($controller, $action, $params);
