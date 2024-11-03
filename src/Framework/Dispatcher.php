@@ -14,7 +14,7 @@ We are using ReflextionMethod to get the parameter name of the methods in a cert
 
 class Dispatcher {
 
-    public function __construct(private Router $router, private Container $container) {
+    public function __construct(private Router $router, private Container $container, private array $middleware_classes) {
 
     }
 
@@ -33,7 +33,6 @@ class Dispatcher {
 
         $controller_object = $this->container->get($controller);
 
-        $controller_object->setRequest($request);
         $controller_object->setViewer($this->container->get(TemplateViewerInterface::class));
 
         $controller_object->setResponse($this->container->get(Response::class));
@@ -42,7 +41,36 @@ class Dispatcher {
         $args = $this->getActionArguments($controller, $action, $params);
 
         //Here we are using the ... to unpach the $args array because each action method may or may not be expecting an array and this sends the values inside the array as a list of individual arguments. Like we would usually do with a comma like $a, $b etc. The number of arguments and everything is handled automatically by getActionArguments() method
-        return $controller_object->$action(...$args);
+        $controller_handler = new ControllerRequestHandler($controller_object, $action, $args);
+
+        $middleware = $this->getMiddleware($params);
+
+        $middleware_handler = new MiddlewareRequestHandler($middleware, $controller_handler);
+
+        return $middleware_handler->handle($request);
+
+    }
+
+    private function getMiddleware(array $params): array {
+
+        if ( ! array_key_exists("middleware", $params)) {
+
+            return [];
+        }
+
+        $middleware = explode("|", $params["middleware"]);
+
+        array_walk($middleware, function(&$value) {
+
+            if ( ! array_key_exists($value, $this->middleware_classes)) {
+
+                throw new UnexpectedValueException("middleware '$value' not found in config settings");
+            }
+
+            $value = $this->container->get($this->middleware_classes[$value]);
+        });
+
+        return $middleware;
     }
 
     //Basically we can tell which parameter is being called when a certain action method is supposed to be executed from within a controller
