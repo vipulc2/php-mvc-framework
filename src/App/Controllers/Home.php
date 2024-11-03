@@ -8,7 +8,6 @@ use Framework\Controller;
 
 class Home extends Controller {
     
-    //These methods of Controller are called actions 
     public function index() {
 
         echo $this->viewer->render("shared/header.php", [
